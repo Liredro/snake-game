@@ -11,8 +11,10 @@ let food;
 let direction;
 let nextDirection;
 let score;
-let gameTimer;
 let gameOver;
+let animationFrameId;
+let lastFrameTime = 0;
+const tickDuration = 130;
 
 // Generate food in a random empty square
 function generateFood() {
@@ -32,7 +34,9 @@ function generateFood() {
 
 // Start or restart the game
 function startGame() {
-    clearInterval(gameTimer);
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+    }
 
     snake = [
         { x: 10, y: 10 },
@@ -45,12 +49,32 @@ function startGame() {
 
     score = 0;
     gameOver = false;
+    lastFrameTime = 0;
     scoreDisplay.textContent = score;
 
     food = generateFood();
 
     drawGame();
-    gameTimer = setInterval(updateGame, 130);
+    animationFrameId = requestAnimationFrame(gameLoop);
+}
+
+function gameLoop(timestamp) {
+    if (gameOver) {
+        return;
+    }
+
+    if (!lastFrameTime) {
+        lastFrameTime = timestamp;
+    }
+
+    const elapsed = timestamp - lastFrameTime;
+
+    if (elapsed >= tickDuration) {
+        lastFrameTime = timestamp;
+        updateGame();
+    }
+
+    animationFrameId = requestAnimationFrame(gameLoop);
 }
 
 // Draw the game
@@ -119,7 +143,7 @@ function updateGame() {
 
     if (hitWall || hitSnake) {
         gameOver = true;
-        clearInterval(gameTimer);
+        cancelAnimationFrame(animationFrameId);
         drawGame();
         return;
     }
@@ -133,7 +157,8 @@ function updateGame() {
 
         // Win if the snake fills the entire board
         if (snake.length === gridSize * gridSize) {
-            clearInterval(gameTimer);
+            gameOver = true;
+            cancelAnimationFrame(animationFrameId);
             drawGame();
             ctx.fillStyle = "white";
             ctx.font = "bold 32px Arial";
