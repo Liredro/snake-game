@@ -1,3 +1,59 @@
+/* General page design */
+
+body {
+    background-color: #0f172a;
+    color: white;
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin: 0;
+    min-height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Centre all game elements */
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 15px;
+    box-sizing: border-box;
+}
+
+/* Game title */
+
+h1 {
+    font-size: 36px;
+    color: #4ade80;
+    margin: 0 0 20px 0;
+}
+
+/* Score and instructions */
+
+p {
+    font-size: 18px;
+    color: #cbd5e1;
+}
+
+#score {
+    color: #4ade80;
+    font-weight: bold;
+}
+
+/* Game board */
+
+canvas {
+    display: block;
+    margin: 25px auto;
+    background-color: #020617;
+    border: 3px solid #4ade80;
+    border-radius: 8px;
+    max-width: 100%;
+    height: auto;
+    box-sizing: border-box;
 }
 
 /* Restart button */
@@ -18,4 +74,16 @@ button {
 
 button:hover {
     background-color: #22c55e;
+}
+
+/* Adjust layout for smaller screens */
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 28px;
+    }
+
+    p {
+        font-size: 16px;
+    }
 }
