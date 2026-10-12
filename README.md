@@ -6,7 +6,7 @@ This project explores fundamental web development and programming concepts throu
 
 ## 🎮 Play the Game
 
-**[▶ Play Snake Online](liredro.github.io/snake-game/)**
+**[▶ Play Snake Online](https://liredro.github.io/snake-game/)** 
 
 Use the arrow keys to control the snake, collect food and achieve the highest score possible!
 
