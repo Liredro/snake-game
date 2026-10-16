@@ -10,6 +10,7 @@ let snake;
 let food;
 let direction;
 let nextDirection;
+let snakeCells;
 let score;
 let gameTimer;
 let gameOver;
@@ -23,9 +24,7 @@ function generateFood() {
             x: Math.floor(Math.random() * gridSize),
             y: Math.floor(Math.random() * gridSize)
         };
-    } while (snake.some(part =>
-        part.x === newFood.x && part.y === newFood.y
-    ));
+    } while (snakeCells.has(newFood.y * gridSize + newFood.x));
 
     return newFood;
 }
@@ -39,6 +38,7 @@ function startGame() {
         { x: 9, y: 10 },
         { x: 8, y: 10 }
     ];
+    snakeCells = new Set(snake.map(part => part.y * gridSize + part.x));
 
     direction = { x: 1, y: 0 };
     nextDirection = { x: 1, y: 0 };
@@ -103,19 +103,18 @@ function updateGame() {
         x: snake[0].x + direction.x,
         y: snake[0].y + direction.y
     };
+    const headCell = head.y * gridSize + head.x;
 
     const eating = head.x === food.x && head.y === food.y;
-
-    // The tail moves away unless the snake is eating
-    const body = eating ? snake : snake.slice(0, -1);
 
     const hitWall =
         head.x < 0 || head.x >= gridSize ||
         head.y < 0 || head.y >= gridSize;
 
-    const hitSnake = body.some(part =>
-        part.x === head.x && part.y === head.y
-    );
+    const tail = snake[snake.length - 1];
+    const tailCell = tail.y * gridSize + tail.x;
+    const hitSnake = snakeCells.has(headCell) &&
+        (eating || headCell !== tailCell);
 
     if (hitWall || hitSnake) {
         gameOver = true;
@@ -124,8 +123,17 @@ function updateGame() {
         return;
     }
 
-    // Move the snake forward
+    // The tail can leave its current cell unless the snake is eating.
+    if (!eating) {
+        const oldTail = snake.pop();
+        const oldTailCell = oldTail.y * gridSize + oldTail.x;
+        if (oldTailCell !== headCell) {
+            snakeCells.delete(oldTailCell);
+        }
+    }
+
     snake.unshift(head);
+    snakeCells.add(headCell);
 
     if (eating) {
         score += 10;
@@ -143,8 +151,6 @@ function updateGame() {
         }
 
         food = generateFood();
-    } else {
-        snake.pop();
     }
 
     drawGame();
