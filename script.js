@@ -30,6 +30,45 @@ function generateFood() {
     return newFood;
 }
 
+function drawFood() {
+    ctx.fillStyle = "#f87171";
+    ctx.fillRect(
+        food.x * tileSize,
+        food.y * tileSize,
+        tileSize - 2,
+        tileSize - 2
+    );
+}
+
+function drawSnakePart(part, color) {
+    ctx.fillStyle = color;
+    ctx.fillRect(
+        part.x * tileSize,
+        part.y * tileSize,
+        tileSize - 2,
+        tileSize - 2
+    );
+}
+
+function drawSnakeMove(previousHead, previousTail, eating) {
+    if (!eating) {
+        ctx.fillStyle = "#020617";
+        ctx.fillRect(
+            previousTail.x * tileSize,
+            previousTail.y * tileSize,
+            tileSize,
+            tileSize
+        );
+    }
+
+    drawSnakePart(previousHead, "#4ade80");
+    drawSnakePart(snake[0], "#86efac");
+
+    if (eating) {
+        drawFood();
+    }
+}
+
 // Start or restart the game
 function startGame() {
     clearInterval(gameTimer);
@@ -59,25 +98,11 @@ function drawGame() {
     ctx.fillStyle = "#020617";
     ctx.fillRect(0, 0, 400, 400);
 
-    // Draw food
-    ctx.fillStyle = "#f87171";
-    ctx.fillRect(
-        food.x * tileSize,
-        food.y * tileSize,
-        tileSize - 2,
-        tileSize - 2
-    );
+    drawFood();
 
     // Draw the snake
     snake.forEach((part, index) => {
-        ctx.fillStyle = index === 0 ? "#86efac" : "#4ade80";
-
-        ctx.fillRect(
-            part.x * tileSize,
-            part.y * tileSize,
-            tileSize - 2,
-            tileSize - 2
-        );
+        drawSnakePart(part, index === 0 ? "#86efac" : "#4ade80");
     });
 
     // Game over message
@@ -99,6 +124,8 @@ function drawGame() {
 function updateGame() {
     direction = nextDirection;
 
+    const previousHead = snake[0];
+    const previousTail = snake[snake.length - 1];
     const head = {
         x: snake[0].x + direction.x,
         y: snake[0].y + direction.y
@@ -147,7 +174,7 @@ function updateGame() {
         snake.pop();
     }
 
-    drawGame();
+    drawSnakeMove(previousHead, previousTail, eating);
 }
 
 // Keyboard controls
