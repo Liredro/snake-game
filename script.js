@@ -18,16 +18,30 @@ let gameOver;
 function generateFood() {
     let newFood;
 
-    do {
+    for (let attempt = 0; attempt < 8; attempt++) {
         newFood = {
             x: Math.floor(Math.random() * gridSize),
             y: Math.floor(Math.random() * gridSize)
         };
-    } while (snake.some(part =>
-        part.x === newFood.x && part.y === newFood.y
-    ));
+        if (!snake.some(part =>
+            part.x === newFood.x && part.y === newFood.y
+        )) {
+            return newFood;
+        }
+    }
 
-    return newFood;
+    const occupied = new Set(snake.map(part => part.y * gridSize + part.x));
+    const emptyCells = [];
+
+    for (let y = 0; y < gridSize; y++) {
+        for (let x = 0; x < gridSize; x++) {
+            if (!occupied.has(y * gridSize + x)) {
+                emptyCells.push({ x, y });
+            }
+        }
+    }
+
+    return emptyCells[Math.floor(Math.random() * emptyCells.length)];
 }
 
 // Start or restart the game
